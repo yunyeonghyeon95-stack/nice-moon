@@ -778,29 +778,37 @@ a {
   top: 0;
   height: 100svh;
   overflow: hidden;
-  padding: clamp(72px, 9vh, 105px) 0 clamp(24px, 4vh, 48px);
+  padding: 0;
+  background: #f2f2ef;
 }
 
 .experiences__layout {
+  position: relative;
+  width: 100%;
+  max-width: none;
   height: 100%;
-  display: grid;
-  grid-template-columns: minmax(300px, 0.42fr) minmax(460px, 0.58fr);
-  grid-template-rows: auto 1fr auto;
-  column-gap: clamp(30px, 5vw, 82px);
+  display: block;
 }
 
 .experiences__eyebrow {
-  grid-column: 1 / -1;
+  position: absolute;
+  z-index: 20;
+  top: clamp(28px, 5vh, 58px);
+  left: clamp(24px, 5vw, 76px);
+  margin: 0;
+  transition: color 300ms ease;
 }
 
 .experiences__intro {
-  grid-column: 1;
-  grid-row: 2;
+  position: absolute;
+  z-index: 10;
+  inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 0;
+  padding: 0 clamp(24px, 8vw, 150px);
+  background: #f2f2ef;
   will-change: transform, opacity;
 }
 
@@ -813,16 +821,15 @@ a {
 }
 
 .experience-grid {
-  position: relative;
-  grid-column: 2;
-  grid-row: 2;
-  align-self: center;
+  position: absolute;
+  z-index: 5;
+  inset: 0;
   width: 100%;
-  height: min(71vh, 710px);
+  height: 100%;
   display: block;
   overflow: hidden;
   border: 0;
-  background: transparent;
+  background: #050505;
 }
 
 .experience-card {
@@ -830,13 +837,14 @@ a {
   inset: 0;
   min-height: 0;
   opacity: 0;
-  transform: translateY(80px) scale(0.94);
+  transform: scale(1.025);
   transform-origin: center;
   will-change: transform, opacity;
   isolation: isolate;
   overflow: hidden;
   color: #fff;
   background: #050505;
+  padding: clamp(88px, 12vh, 138px) clamp(24px, 6vw, 96px) clamp(56px, 9vh, 100px);
 }
 
 .experience-card::after {
@@ -844,7 +852,7 @@ a {
   position: absolute;
   z-index: 1;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.04) 38%, rgba(0, 0, 0, 0.78) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.34) 0%, rgba(0, 0, 0, 0.02) 42%, rgba(0, 0, 0, 0.82) 100%);
   pointer-events: none;
 }
 
@@ -881,13 +889,25 @@ a {
   opacity: 0.86;
 }
 
+.experience-card h3 {
+  font-size: clamp(2.9rem, 6.3vw, 7.2rem);
+}
+
+.experience-card__desc {
+  max-width: 620px;
+  font-size: clamp(1rem, 1.35vw, 1.3rem);
+}
+
 .experience-card:hover {
   transform: none;
 }
 
 .experience-progress {
-  grid-column: 2;
-  grid-row: 3;
+  position: absolute;
+  z-index: 20;
+  right: clamp(24px, 5vw, 76px);
+  bottom: clamp(22px, 4vh, 46px);
+  width: min(360px, 40vw);
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -897,19 +917,23 @@ a {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 300ms ease;
 }
 
 .experience-progress i {
   height: 1px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .experience-progress b {
   display: block;
   width: 100%;
   height: 100%;
-  background: #0a0a0a;
+  background: var(--accent);
   transform: scaleX(0);
   transform-origin: left center;
   will-change: transform;
@@ -1099,25 +1123,18 @@ a {
   }
 
   .experiences__sticky {
-    padding: 78px 0 22px;
+    padding: 0;
   }
 
   .experiences__layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    column-gap: 0;
-  }
-
-  .experiences__intro,
-  .experience-grid {
-    grid-column: 1;
-    grid-row: 2;
+    display: block;
   }
 
   .experiences__intro {
-    position: relative;
-    z-index: 1;
+    position: absolute;
+    z-index: 10;
     justify-content: center;
+    padding: 0 24px;
   }
 
   .experiences__intro h2 {
@@ -1125,15 +1142,16 @@ a {
   }
 
   .experience-grid {
-    z-index: 2;
-    align-self: stretch;
-    height: auto;
-    margin-top: 24px;
+    position: absolute;
+    z-index: 5;
+    inset: 0;
+    height: 100%;
+    margin: 0;
   }
 
   .experience-card {
     min-height: 0;
-    padding: 28px 24px;
+    padding: 92px 24px 72px;
   }
 
   .experience-card__video {
@@ -1153,7 +1171,9 @@ a {
   }
 
   .experience-progress {
-    grid-column: 1;
+    right: 24px;
+    bottom: 24px;
+    width: calc(100% - 48px);
   }
 }
 

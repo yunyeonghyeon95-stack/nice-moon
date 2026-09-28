@@ -88,8 +88,10 @@
     const cardPhase = contentProgress * experienceCards.length;
     const activeCard = clamp(Math.floor(cardPhase), 0, experienceCards.length - 1);
 
-    experiencesIntro.style.opacity = String(1 - introDim * 0.88);
+    experiencesIntro.style.opacity = String(1 - introDim);
     experiencesIntro.style.transform = `translateY(${-introDim * 34}px)`;
+    document.querySelector('.experiences__eyebrow').style.color = contentProgress > 0.015 ? '#fff' : '#0a0a0a';
+    document.querySelector('.experience-progress').style.opacity = String(introDim);
 
     experienceCards.forEach((card, index) => {
       const localProgress = clamp(cardPhase - index, 0, 1);
@@ -98,9 +100,8 @@
         ? 1
         : 1 - smoothstep(0.88, 1.04, cardPhase - index);
       const visibility = fadeIn * fadeOut * cardEntrance;
-      const offset = (1 - localProgress) * 28;
       card.style.opacity = String(visibility);
-      card.style.transform = `translateY(${offset}px) scale(${0.985 + visibility * 0.015})`;
+      card.style.transform = `scale(${1.025 - localProgress * 0.025})`;
       card.style.pointerEvents = visibility > 0.75 ? 'auto' : 'none';
       card.style.zIndex = String(index + 1);
 
