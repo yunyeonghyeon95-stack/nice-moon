@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#050505" />
+    <meta
+      name="description"
+      content="NICE MOON — 달에서 만나는 새로운 여행과 미식 경험."
+    />
+    <title>NICE MOON — Dream Came True</title>
+    <link rel="preload" href="./assets/nice-moon-film.mp4" as="video" type="video/mp4" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="loader" aria-live="polite">
+      <div class="loader__mark" aria-hidden="true"></div>
+      <p class="loader__label">PREPARING YOUR FLIGHT</p>
+      <div class="loader__track"><span></span></div>
+      <p class="loader__percent">0%</p>
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="NICE MOON 처음으로">
+        <img src="./assets/nice-moon-logo.png" alt="NICE MOON" />
+      </a>
+      <div class="chapter" aria-live="polite">
+        <span class="chapter__number">01</span>
+        <span class="chapter__line"></span>
+        <span class="chapter__name">NEW RESORT</span>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="film" aria-label="NICE MOON 브랜드 필름">
+        <div class="film__sticky">
+          <video
+            id="moonFilm"
+            muted
+            playsinline
+            preload="auto"
+            poster="./assets/poster.jpg"
+            aria-label="우주선의 달 도착부터 월석 채집과 달 요리까지 이어지는 영상"
+          >
+            <source src="./assets/nice-moon-film.mp4" type="video/mp4" />
+          </video>
+          <div class="film__shade" aria-hidden="true"></div>
+
+          <div class="scroll-cue" aria-hidden="true">
+            <span>SCROLL TO EXPLORE</span>
+            <i></i>
+          </div>
+
+          <div class="progress" aria-hidden="true">
+            <span class="progress__bar"></span>
+          </div>
+
+          <p class="rotate-message">휴대폰을 세로로 돌려서 감상해 주세요.</p>
+        </div>
+      </section>
+    </main>
+
+    <noscript>
+      <p class="noscript">이 페이지를 감상하려면 JavaScript를 활성화해 주세요.</p>
+    </noscript>
+    <script src="./script.js"></script>
+  </body>
+</html>
