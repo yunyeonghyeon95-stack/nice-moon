@@ -21,6 +21,7 @@
   const experiencesSection = document.querySelector('.experiences');
   const experiencesIntro = document.querySelector('.experiences__intro');
   const experienceCards = [...document.querySelectorAll('.experience-card')];
+  const experienceVideos = [...document.querySelectorAll('.experience-card__video')];
   const experienceProgress = document.querySelector('.experience-progress b');
   const experienceCurrent = document.querySelector('.experience-progress__current');
 
@@ -37,6 +38,8 @@
   let duration = 0;
   let lastChapter = -1;
   let rafId;
+  const experienceVideoTargets = experienceVideos.map(() => 0);
+  const experienceVideoTimes = experienceVideos.map(() => 0);
 
   body.classList.add('is-loading');
 
@@ -75,26 +78,35 @@
     aboutFleet.style.opacity = String(fleetIn * (1 - fleetOut));
     aboutFleet.style.transform = `scale(${1.08 - fleetIn * 0.08 + fleetOut * 0.03})`;
     aboutSpaceport.style.opacity = String(spaceportIn);
-    aboutSpaceport.style.transform = `translateY(${(1 - spaceportIn) * -8}%) scale(${1.04 - spaceportIn * 0.04})`;
+    aboutSpaceport.style.transform = `translateY(${(1 - spaceportIn) * -4}%) scale(${1.04 - spaceportIn * 0.04})`;
     storyProgress.style.transform = `scaleX(${aboutProgress})`;
 
     const experienceSectionProgress = getSectionProgress(experiencesSection);
-    const cardEntrance = smoothstep(0.09, 0.17, experienceSectionProgress);
+    const cardEntrance = smoothstep(0.09, 0.16, experienceSectionProgress);
     const introDim = smoothstep(0.08, 0.2, experienceSectionProgress);
-    const cardPhase = clamp((experienceSectionProgress - 0.13) / 0.76, 0, 1) * 3;
-    const activeCard = clamp(Math.round(cardPhase), 0, 3);
+    const contentProgress = clamp((experienceSectionProgress - 0.13) / 0.82, 0, 1);
+    const cardPhase = contentProgress * experienceCards.length;
+    const activeCard = clamp(Math.floor(cardPhase), 0, experienceCards.length - 1);
 
     experiencesIntro.style.opacity = String(1 - introDim * 0.88);
     experiencesIntro.style.transform = `translateY(${-introDim * 34}px)`;
 
     experienceCards.forEach((card, index) => {
-      const distance = Math.abs(cardPhase - index);
-      const visibility = clamp(1 - distance * 1.35, 0, 1) * cardEntrance;
-      const offset = (index - cardPhase) * 90;
+      const localProgress = clamp(cardPhase - index, 0, 1);
+      const fadeIn = smoothstep(-0.08, 0.08, cardPhase - index);
+      const fadeOut = index === experienceCards.length - 1
+        ? 1
+        : 1 - smoothstep(0.88, 1.04, cardPhase - index);
+      const visibility = fadeIn * fadeOut * cardEntrance;
+      const offset = (1 - localProgress) * 28;
       card.style.opacity = String(visibility);
-      card.style.transform = `translateY(${offset}px) scale(${0.94 + visibility * 0.06})`;
+      card.style.transform = `translateY(${offset}px) scale(${0.985 + visibility * 0.015})`;
       card.style.pointerEvents = visibility > 0.75 ? 'auto' : 'none';
-      card.style.zIndex = String(10 - Math.round(distance * 2));
+      card.style.zIndex = String(index + 1);
+
+      const clip = experienceVideos[index];
+      const clipDuration = Number.isFinite(clip.duration) && clip.duration > 0 ? clip.duration : 8;
+      experienceVideoTargets[index] = localProgress * Math.max(clipDuration - 0.05, 0);
     });
 
     experienceProgress.style.transform = `scaleX(${experienceSectionProgress})`;
@@ -140,6 +152,14 @@
       video.currentTime = displayedTime;
     }
 
+    experienceVideos.forEach((clip, index) => {
+      const delta = experienceVideoTargets[index] - experienceVideoTimes[index];
+      experienceVideoTimes[index] += delta * 0.2;
+      if (clip.readyState >= 1 && Math.abs(clip.currentTime - experienceVideoTimes[index]) > 0.025) {
+        clip.currentTime = experienceVideoTimes[index];
+      }
+    });
+
     rafId = requestAnimationFrame(render);
   }
 
@@ -178,6 +198,7 @@
 
   const unlockVideo = () => {
     video.play().then(() => video.pause()).catch(() => {});
+    experienceVideos.forEach((clip) => clip.play().then(() => clip.pause()).catch(() => {}));
     window.removeEventListener('touchstart', unlockVideo);
     window.removeEventListener('pointerdown', unlockVideo);
   };

@@ -691,10 +691,11 @@ a {
 }
 
 .about__visual--spaceport {
+  top: clamp(54px, 7vh, 78px);
   bottom: auto;
-  height: 48%;
+  height: 64%;
   object-position: center top;
-  transform: translateY(-8%) scale(1.04);
+  transform: translateY(-4%) scale(1.04);
 }
 
 .about__visuals::after {
@@ -832,6 +833,52 @@ a {
   transform: translateY(80px) scale(0.94);
   transform-origin: center;
   will-change: transform, opacity;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background: #050505;
+}
+
+.experience-card::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.04) 38%, rgba(0, 0, 0, 0.78) 100%);
+  pointer-events: none;
+}
+
+.experience-card > :not(.experience-card__video) {
+  position: relative;
+  z-index: 2;
+}
+
+.experience-card__video {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: #050505;
+  pointer-events: none;
+}
+
+.experience-card__orbit {
+  display: none;
+}
+
+.experience-card__number,
+.experience-card__label,
+.experience-card__desc {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.72);
+}
+
+.experience-card__label,
+.experience-card__desc {
+  opacity: 0.86;
 }
 
 .experience-card:hover {
@@ -1087,6 +1134,10 @@ a {
   .experience-card {
     min-height: 0;
     padding: 28px 24px;
+  }
+
+  .experience-card__video {
+    object-position: center;
   }
 
   .experience-card__orbit {
