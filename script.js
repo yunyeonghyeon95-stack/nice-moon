@@ -14,6 +14,9 @@
   const aboutHeadline = document.querySelector('.about__headline');
   const aboutStory = document.querySelector('.about__story');
   const aboutStats = document.querySelector('.stats');
+  const aboutPanorama = document.querySelector('.about__visual--panorama');
+  const aboutFleet = document.querySelector('.about__visual--fleet');
+  const aboutSpaceport = document.querySelector('.about__visual--spaceport');
   const storyProgress = document.querySelector('.story-progress span');
   const experiencesSection = document.querySelector('.experiences');
   const experiencesIntro = document.querySelector('.experiences__intro');
@@ -55,6 +58,11 @@
     const storyIn = smoothstep(0.23, 0.43, aboutProgress);
     const storyOut = smoothstep(0.55, 0.7, aboutProgress);
     const statsIn = smoothstep(0.6, 0.79, aboutProgress);
+    const panoramaIn = smoothstep(0.02, 0.14, aboutProgress);
+    const panoramaOut = smoothstep(0.24, 0.39, aboutProgress);
+    const fleetIn = smoothstep(0.27, 0.43, aboutProgress);
+    const fleetOut = smoothstep(0.55, 0.7, aboutProgress);
+    const spaceportIn = smoothstep(0.61, 0.79, aboutProgress);
 
     aboutHeadline.style.opacity = String(1 - headlineOut);
     aboutHeadline.style.transform = `translateY(${-headlineOut * 70}px) scale(${1 - headlineOut * 0.04})`;
@@ -62,6 +70,12 @@
     aboutStory.style.transform = `translateY(${(1 - storyIn) * 70 - storyOut * 55}px)`;
     aboutStats.style.opacity = String(statsIn);
     aboutStats.style.transform = `translateY(${(1 - statsIn) * 70}px)`;
+    aboutPanorama.style.opacity = String(panoramaIn * (1 - panoramaOut));
+    aboutPanorama.style.transform = `translateY(${(1 - panoramaIn) * 10}%) scale(${1.04 - panoramaIn * 0.04})`;
+    aboutFleet.style.opacity = String(fleetIn * (1 - fleetOut));
+    aboutFleet.style.transform = `scale(${1.08 - fleetIn * 0.08 + fleetOut * 0.03})`;
+    aboutSpaceport.style.opacity = String(spaceportIn);
+    aboutSpaceport.style.transform = `translateY(${(1 - spaceportIn) * -8}%) scale(${1.04 - spaceportIn * 0.04})`;
     storyProgress.style.transform = `scaleX(${aboutProgress})`;
 
     const experienceSectionProgress = getSectionProgress(experiencesSection);

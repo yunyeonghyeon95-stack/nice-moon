@@ -659,11 +659,61 @@ a {
   height: 100svh;
   overflow: hidden;
   padding: clamp(76px, 10vh, 112px) 0 clamp(30px, 5vh, 58px);
+  background: #050505;
+}
+
+.about__visuals,
+.about__visual {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.about__visual {
+  object-fit: cover;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.about__visual--panorama {
+  top: auto;
+  bottom: 0;
+  height: 42%;
+  object-position: center bottom;
+  transform: translateY(10%) scale(1.04);
+}
+
+.about__visual--fleet {
+  object-position: center center;
+  transform: scale(1.08);
+}
+
+.about__visual--spaceport {
+  bottom: auto;
+  height: 48%;
+  object-position: center top;
+  transform: translateY(-8%) scale(1.04);
+}
+
+.about__visuals::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.42));
+  pointer-events: none;
 }
 
 .about__sticky .section-wrap {
   position: relative;
   height: 100%;
+  z-index: 1;
+}
+
+.about__lead-line {
+  display: block;
+  white-space: nowrap;
 }
 
 .about__headline,
