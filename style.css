@@ -650,6 +650,7 @@ a {
 .about {
   height: 360vh;
   padding: 0;
+  overflow: visible;
 }
 
 .about__sticky {
@@ -718,6 +719,7 @@ a {
 .experiences {
   height: 520vh;
   padding: 0;
+  overflow: visible;
 }
 
 .experiences__sticky {
