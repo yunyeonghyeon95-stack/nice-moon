@@ -691,11 +691,10 @@ a {
 }
 
 .about__visual--spaceport {
-  top: 80px;
   bottom: auto;
-  height: 68%;
+  height: 48%;
   object-position: center top;
-  transform: translateY(-4%) scale(1.04);
+  transform: translateY(-8%) scale(1.04);
 }
 
 .about__visuals::after {
