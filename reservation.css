@@ -93,3 +93,7 @@ button {
 .summary dd {
   font-size: 19px;
 }
+
+.conditional-field[hidden] {
+  display: none !important;
+}
