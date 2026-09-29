@@ -32,3 +32,64 @@ input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:#b02c2
 @keyframes shipFly{0%{transform:translate3d(0,0,0) scale(var(--ship-scale)) rotate(var(--ship-angle))}100%{transform:translate3d(155vw,var(--ship-drift),0) scale(var(--ship-scale)) rotate(var(--ship-angle))}}
 
 @media(max-width:900px){.choice strong{font-size:17px}.choice small{font-size:13px}.field input,.field select,.field textarea{font-size:18px}.mini-ship{width:calc(var(--ship-size)*.78)}}
+
+/* 오른쪽 예약 화면 글자 크기 직접 조절 */
+
+/* EXPERIENCE, 객실 선택 카드의 큰 영어 제목 */
+.choice strong {
+  font-size: 26px;
+}
+
+/* 선택 카드의 한글 설명 */
+.choice small {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* 카드 상단 01, 02 등의 번호 */
+.choice b {
+  font-size: 18px;
+}
+
+/* 카드 자체 높이와 내부 여백 */
+.choice span {
+  min-height: 155px;
+  padding: 27px 28px;
+}
+
+/* 출발일, 탑승 인원, 이름 등 입력 항목 제목 */
+.field > span {
+  font-size: 22px;
+}
+
+/* 입력창과 드롭다운 글자 */
+.field input,
+.field select,
+.field textarea {
+  font-size: 22px;
+}
+
+/* 01 · CHOOSE EXPERIENCE 같은 작은 단계 제목 */
+.step-label {
+  font-size: 12px;
+}
+
+/* 개인정보 동의 글자 */
+.agreement {
+  font-size: 18px;
+}
+
+/* BACK, NEXT STEP 버튼 글자 */
+button {
+  font-size: 20px;
+}
+
+/* 마지막 예약 확인 화면 왼쪽 항목명 */
+.summary dt {
+  font-size: 16px;
+}
+
+/* 마지막 예약 확인 화면 선택 내용 */
+.summary dd {
+  font-size: 19px;
+}
