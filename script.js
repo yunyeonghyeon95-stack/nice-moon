@@ -19,9 +19,12 @@
   const aboutSpaceport = document.querySelector('.about__visual--spaceport');
   const storyProgress = document.querySelector('.story-progress span');
   const experiencesSection = document.querySelector('.experiences');
+  const experiencesSticky = document.querySelector('.experiences__sticky');
   const experiencesIntro = document.querySelector('.experiences__intro');
+  const experiencesEyebrow = document.querySelector('.experiences__eyebrow');
   const experienceCards = [...document.querySelectorAll('.experience-card')];
   const experienceVideos = [...document.querySelectorAll('.experience-card__video')];
+  const experienceProgressWrap = document.querySelector('.experience-progress');
   const experienceProgress = document.querySelector('.experience-progress b');
   const experienceCurrent = document.querySelector('.experience-progress__current');
 
@@ -38,16 +41,35 @@
   let duration = 0;
   let lastChapter = -1;
   let rafId;
+  let experienceSequenceStarted = false;
+  let activeExperienceIndex = 0;
 
-  // Section 03 videos run independently from scroll, like a background film.
-  // Scroll only selects and crossfades the visible scene.
-  experienceVideos.forEach((clip) => {
+  // Section 03 is a normal full-screen section, not a long scroll-scrub area.
+  experiencesSection.style.height = '100svh';
+  experiencesSection.style.minHeight = '100svh';
+  experiencesSticky.style.position = 'relative';
+  experiencesSticky.style.top = 'auto';
+
+  // Four background films play as one independent 2x playlist.
+  experienceVideos.forEach((clip, index) => {
     clip.muted = true;
-    clip.loop = true;
+    clip.loop = false;
     clip.playsInline = true;
     clip.preload = 'auto';
-    clip.defaultPlaybackRate = 1.5;
-    clip.playbackRate = 1.5;
+    clip.defaultPlaybackRate = 2;
+    clip.playbackRate = 2;
+
+    clip.addEventListener('ended', () => {
+      if (!experienceSequenceStarted || index !== activeExperienceIndex) return;
+      playExperience((index + 1) % experienceVideos.length);
+    });
+  });
+
+  experienceCards.forEach((card) => {
+    card.style.transition = 'none';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(1.025)';
+    card.style.pointerEvents = 'none';
   });
 
   body.classList.add('is-loading');
@@ -62,6 +84,50 @@
     const distance = section.offsetHeight - window.innerHeight;
     if (distance <= 0) return 0;
     return clamp((window.scrollY - section.offsetTop) / distance, 0, 1);
+  }
+
+  function showExperience(index) {
+    activeExperienceIndex = index;
+
+    experienceCards.forEach((card, cardIndex) => {
+      const isActive = cardIndex === index;
+      card.style.opacity = isActive ? '1' : '0';
+      card.style.transform = isActive ? 'scale(1)' : 'scale(1.025)';
+      card.style.pointerEvents = isActive ? 'auto' : 'none';
+      card.style.zIndex = isActive ? '10' : String(cardIndex + 1);
+    });
+
+    experienceCurrent.textContent = String(index + 1).padStart(2, '0');
+  }
+
+  function playExperience(index) {
+    experienceVideos.forEach((clip, clipIndex) => {
+      if (clipIndex !== index) clip.pause();
+    });
+
+    const clip = experienceVideos[index];
+    showExperience(index);
+    clip.currentTime = 0;
+    clip.playbackRate = 2;
+    clip.play().catch(() => {});
+  }
+
+  function startExperienceSequence() {
+    if (experienceSequenceStarted) return;
+    experienceSequenceStarted = true;
+    experiencesIntro.style.opacity = '0';
+    experiencesIntro.style.transform = 'translateY(-34px)';
+    experiencesIntro.style.pointerEvents = 'none';
+    experiencesEyebrow.style.color = '#fff';
+    experienceProgressWrap.style.opacity = '1';
+    playExperience(0);
+  }
+
+  function maybeStartExperienceSequence() {
+    if (experienceSequenceStarted) return;
+    const rect = experiencesSection.getBoundingClientRect();
+    const hasEnteredSection = rect.top <= window.innerHeight * 0.88 && rect.bottom > 0;
+    if (hasEnteredSection) startExperienceSequence();
   }
 
   function syncNarrative() {
@@ -90,47 +156,7 @@
     aboutSpaceport.style.transform = `translateY(${(1 - spaceportIn) * -4}%) scale(${1.04 - spaceportIn * 0.04})`;
     storyProgress.style.transform = `scaleX(${aboutProgress})`;
 
-    const experienceSectionProgress = getSectionProgress(experiencesSection);
-    const cardEntrance = smoothstep(0.09, 0.16, experienceSectionProgress);
-    const introDim = smoothstep(0.08, 0.2, experienceSectionProgress);
-    const contentProgress = clamp((experienceSectionProgress - 0.13) / 0.82, 0, 1);
-    const cardPhase = contentProgress * experienceCards.length;
-    const activeCard = clamp(Math.floor(cardPhase), 0, experienceCards.length - 1);
-    const experienceTop = experiencesSection.offsetTop;
-    const experienceBottom = experienceTop + experiencesSection.offsetHeight;
-    const experienceIsOnScreen = window.scrollY + window.innerHeight > experienceTop
-      && window.scrollY < experienceBottom;
-
-    experiencesIntro.style.opacity = String(1 - introDim);
-    experiencesIntro.style.transform = `translateY(${-introDim * 34}px)`;
-    document.querySelector('.experiences__eyebrow').style.color = contentProgress > 0.015 ? '#fff' : '#0a0a0a';
-    document.querySelector('.experience-progress').style.opacity = String(introDim);
-
-    experienceCards.forEach((card, index) => {
-      const localProgress = clamp(cardPhase - index, 0, 1);
-      const fadeIn = smoothstep(-0.08, 0.08, cardPhase - index);
-      const fadeOut = index === experienceCards.length - 1
-        ? 1
-        : 1 - smoothstep(0.88, 1.04, cardPhase - index);
-      const visibility = fadeIn * fadeOut * cardEntrance;
-      card.style.opacity = String(visibility);
-      card.style.transform = `scale(${1.025 - localProgress * 0.025})`;
-      card.style.pointerEvents = visibility > 0.75 ? 'auto' : 'none';
-      card.style.zIndex = String(index + 1);
-
-      const clip = experienceVideos[index];
-      const shouldPlay = experienceIsOnScreen && contentProgress > 0 && visibility > 0.02;
-
-      if (shouldPlay) {
-        clip.playbackRate = 1.5;
-        if (clip.paused) clip.play().catch(() => {});
-      } else if (!clip.paused) {
-        clip.pause();
-      }
-    });
-
-    experienceProgress.style.transform = `scaleX(${experienceSectionProgress})`;
-    experienceCurrent.textContent = String(activeCard + 1).padStart(2, '0');
+    maybeStartExperienceSequence();
   }
 
   function getProgress() {
@@ -172,6 +198,15 @@
       video.currentTime = displayedTime;
     }
 
+    if (experienceSequenceStarted) {
+      const activeClip = experienceVideos[activeExperienceIndex];
+      const clipProgress = Number.isFinite(activeClip.duration) && activeClip.duration > 0
+        ? activeClip.currentTime / activeClip.duration
+        : 0;
+      const playlistProgress = (activeExperienceIndex + clipProgress) / experienceVideos.length;
+      experienceProgress.style.transform = `scaleX(${playlistProgress})`;
+    }
+
     rafId = requestAnimationFrame(render);
   }
 
@@ -211,10 +246,13 @@
   const unlockVideo = () => {
     video.play().then(() => video.pause()).catch(() => {});
     experienceVideos.forEach((clip) => {
-      clip.playbackRate = 1.5;
+      clip.playbackRate = 2;
       clip.play().then(() => {
         clip.pause();
-        syncNarrative();
+        if (experienceSequenceStarted && clip === experienceVideos[activeExperienceIndex]) {
+          clip.playbackRate = 2;
+          clip.play().catch(() => {});
+        }
       }).catch(() => {});
     });
     window.removeEventListener('touchstart', unlockVideo);
