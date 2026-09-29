@@ -109,8 +109,39 @@
               <label class="field"><span>이름</span><input type="text" name="name" placeholder="홍길동" required /></label>
               <label class="field"><span>연락처</span><input type="tel" name="phone" placeholder="010-0000-0000" required /></label>
               <label class="field field--wide"><span>이메일</span><input type="email" name="email" placeholder="moon@example.com" required /></label>
-              <label class="field"><span>성별</span><select name="gender" required><option value="">선택</option><option value="남성">남성</option><option value="여성">여성</option></select></label>
-              <label class="field"><span>우주복 상체 핏</span><select name="suitSize" required><option value="">선택</option><option value="XS">XS</option><option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option><option value="맞춤 피팅 필요">맞춤 피팅 필요</option></select></label>
+              <label class="field">
+  <span>성별</span>
+  <select name="gender" id="genderSelect" required>
+    <option value="">선택</option>
+    <option value="남성">남성</option>
+    <option value="여성">여성</option>
+  </select>
+</label>
+
+<label class="field conditional-field" id="maleSuitField" hidden>
+  <span>우주복 상체 핏</span>
+  <select name="suitSize" id="suitSize">
+    <option value="">선택</option>
+    <option value="XS">XS</option>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+    <option value="맞춤 피팅 필요">맞춤 피팅 필요</option>
+  </select>
+</label>
+
+<label class="field conditional-field" id="femaleShoeField" hidden>
+  <span>우주화 사이즈</span>
+  <select name="shoeSize" id="shoeSize">
+    <option value="">선택</option>
+    <option value="210mm">210mm</option>
+    <option value="220mm">220mm</option>
+    <option value="230mm">230mm</option>
+    <option value="240mm">240mm</option>
+    <option value="250mm">250mm</option>
+  </select>
+</label>
               <label class="field field--wide"><span>요청사항 <em>OPTIONAL</em></span><textarea name="request" rows="3" placeholder="식사, 객실 또는 이동 지원에 관한 요청을 적어주세요."></textarea></label>
             </div>
             <label class="agreement"><input type="checkbox" name="agreement" required /><span></span>예약 상담을 위한 개인정보 수집 및 이용에 동의합니다.</label>
