@@ -38,8 +38,17 @@
   let duration = 0;
   let lastChapter = -1;
   let rafId;
-  const experienceVideoTargets = experienceVideos.map(() => 0);
-  const experienceVideoTimes = experienceVideos.map(() => 0);
+
+  // Section 03 videos run independently from scroll, like a background film.
+  // Scroll only selects and crossfades the visible scene.
+  experienceVideos.forEach((clip) => {
+    clip.muted = true;
+    clip.loop = true;
+    clip.playsInline = true;
+    clip.preload = 'auto';
+    clip.defaultPlaybackRate = 1.5;
+    clip.playbackRate = 1.5;
+  });
 
   body.classList.add('is-loading');
 
@@ -87,6 +96,10 @@
     const contentProgress = clamp((experienceSectionProgress - 0.13) / 0.82, 0, 1);
     const cardPhase = contentProgress * experienceCards.length;
     const activeCard = clamp(Math.floor(cardPhase), 0, experienceCards.length - 1);
+    const experienceTop = experiencesSection.offsetTop;
+    const experienceBottom = experienceTop + experiencesSection.offsetHeight;
+    const experienceIsOnScreen = window.scrollY + window.innerHeight > experienceTop
+      && window.scrollY < experienceBottom;
 
     experiencesIntro.style.opacity = String(1 - introDim);
     experiencesIntro.style.transform = `translateY(${-introDim * 34}px)`;
@@ -106,8 +119,14 @@
       card.style.zIndex = String(index + 1);
 
       const clip = experienceVideos[index];
-      const clipDuration = Number.isFinite(clip.duration) && clip.duration > 0 ? clip.duration : 8;
-      experienceVideoTargets[index] = localProgress * Math.max(clipDuration - 0.05, 0);
+      const shouldPlay = experienceIsOnScreen && contentProgress > 0 && visibility > 0.02;
+
+      if (shouldPlay) {
+        clip.playbackRate = 1.5;
+        if (clip.paused) clip.play().catch(() => {});
+      } else if (!clip.paused) {
+        clip.pause();
+      }
     });
 
     experienceProgress.style.transform = `scaleX(${experienceSectionProgress})`;
@@ -153,14 +172,6 @@
       video.currentTime = displayedTime;
     }
 
-    experienceVideos.forEach((clip, index) => {
-      const delta = experienceVideoTargets[index] - experienceVideoTimes[index];
-      experienceVideoTimes[index] += delta * 0.2;
-      if (clip.readyState >= 1 && Math.abs(clip.currentTime - experienceVideoTimes[index]) > 0.025) {
-        clip.currentTime = experienceVideoTimes[index];
-      }
-    });
-
     rafId = requestAnimationFrame(render);
   }
 
@@ -199,14 +210,23 @@
 
   const unlockVideo = () => {
     video.play().then(() => video.pause()).catch(() => {});
-    experienceVideos.forEach((clip) => clip.play().then(() => clip.pause()).catch(() => {}));
+    experienceVideos.forEach((clip) => {
+      clip.playbackRate = 1.5;
+      clip.play().then(() => {
+        clip.pause();
+        syncNarrative();
+      }).catch(() => {});
+    });
     window.removeEventListener('touchstart', unlockVideo);
     window.removeEventListener('pointerdown', unlockVideo);
   };
   window.addEventListener('touchstart', unlockVideo, { passive: true });
   window.addEventListener('pointerdown', unlockVideo, { passive: true });
 
-  window.addEventListener('pagehide', () => cancelAnimationFrame(rafId));
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    experienceVideos.forEach((clip) => clip.pause());
+  });
 
   const revealObserver = new IntersectionObserver(
     (entries) => {
