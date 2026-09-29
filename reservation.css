@@ -42,7 +42,7 @@ input:user-invalid,select:user-invalid,textarea:user-invalid{border-color:#b02c2
 
 /* 선택 카드의 한글 설명 */
 .choice small {
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.5;
 }
 
