@@ -9,6 +9,11 @@
   const summary = document.querySelector('#summary');
   const success = document.querySelector('#success');
   const experienceError = document.querySelector('#experienceError');
+  const genderSelect = document.querySelector('#genderSelect');
+const maleSuitField = document.querySelector('#maleSuitField');
+const femaleShoeField = document.querySelector('#femaleShoeField');
+const suitSize = document.querySelector('#suitSize');
+const shoeSize = document.querySelector('#shoeSize');
   const massageChoice = form.querySelector('input[value="Lunar Massage Lounge"]');
   const massageCourseField = document.querySelector('#massageCourseField');
   const massageCourse = document.querySelector('#massageCourse');
@@ -57,7 +62,16 @@
       ['MASSAGE COURSE', data.get('massageCourse') || '선택 안 함'],
       ['CABIN & STAY', data.get('cabin') || '—'],
       ['PASSENGER', data.get('name') || '—'],
-      ['GENDER / SUIT', `${data.get('gender') || '—'} · ${data.get('suitSize') || '—'}`],
+      [
+  'GENDER / FIT',
+  `${data.get('gender') || '—'} · ${
+    data.get('gender') === '남성'
+      ? data.get('suitSize') || '—'
+      : data.get('gender') === '여성'
+        ? data.get('shoeSize') || '—'
+        : '—'
+  }`
+],
       ['CONTACT', `${data.get('phone') || '—'} · ${data.get('email') || '—'}`]
     ];
     summary.innerHTML = rows.map(([title, value]) => `<div><dt>${title}</dt><dd>${value}</dd></div>`).join('');
@@ -91,6 +105,26 @@
   }
 
   massageChoice.addEventListener('change', toggleMassageCourse);
+  function updateGenderField() {
+  const isMale = genderSelect.value === '남성';
+  const isFemale = genderSelect.value === '여성';
+
+  maleSuitField.hidden = !isMale;
+  femaleShoeField.hidden = !isFemale;
+
+  suitSize.required = isMale;
+  shoeSize.required = isFemale;
+
+  if (!isMale) {
+    suitSize.value = '';
+  }
+
+  if (!isFemale) {
+    shoeSize.value = '';
+  }
+}
+
+genderSelect.addEventListener('change', updateGenderField);
 
   function createSpacecraft() {
     const ship = document.createElement('span');
@@ -119,6 +153,7 @@
   today.setDate(today.getDate() + 1);
   form.elements.departure.min = today.toISOString().slice(0, 10);
   toggleMassageCourse();
+  updateGenderField();
   updateStep();
   window.setTimeout(launchRandomFleet, 700);
 })();
