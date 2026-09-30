@@ -43,6 +43,36 @@
   let rafId;
   let experienceSequenceStarted = false;
   let activeExperienceIndex = 0;
+  const mobileHeroQuery = window.matchMedia('(max-width: 760px)');
+
+  function isMobileHero() {
+    return mobileHeroQuery.matches;
+  }
+
+  function configureHeroPlayback() {
+    if (isMobileHero()) {
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.defaultPlaybackRate = 2;
+      video.playbackRate = 2;
+      scrollCue.style.opacity = '1';
+      video.play().catch(() => {});
+      return;
+    }
+
+    video.loop = false;
+    video.defaultPlaybackRate = 1;
+    video.playbackRate = 1;
+    video.pause();
+
+    if (duration) {
+      const progress = getProgress();
+      targetTime = progress * Math.max(duration - 0.05, 0);
+      displayedTime = targetTime;
+      video.currentTime = displayedTime;
+    }
+  }
 
   // Section 03 is a normal full-screen section, not a long scroll-scrub area.
   experiencesSection.style.height = '100svh';
@@ -182,20 +212,29 @@
   }
 
   function syncTarget() {
-    const progress = getProgress();
-    targetTime = progress * Math.max(duration - 0.05, 0);
-    progressBar.style.transform = `scaleX(${progress})`;
-    scrollCue.style.opacity = progress > 0.035 ? '0' : '1';
-    updateChapter(progress);
+    if (!isMobileHero()) {
+      const progress = getProgress();
+      targetTime = progress * Math.max(duration - 0.05, 0);
+      progressBar.style.transform = `scaleX(${progress})`;
+      scrollCue.style.opacity = progress > 0.035 ? '0' : '1';
+      updateChapter(progress);
+    }
     syncNarrative();
   }
 
   function render() {
-    const delta = targetTime - displayedTime;
-    displayedTime += delta * 0.18;
+    if (isMobileHero()) {
+      const heroProgress = Number.isFinite(video.duration) && video.duration > 0
+        ? video.currentTime / video.duration
+        : 0;
+      progressBar.style.transform = `scaleX(${heroProgress})`;
+    } else {
+      const delta = targetTime - displayedTime;
+      displayedTime += delta * 0.18;
 
-    if (Math.abs(video.currentTime - displayedTime) > 0.025) {
-      video.currentTime = displayedTime;
+      if (Math.abs(video.currentTime - displayedTime) > 0.025) {
+        video.currentTime = displayedTime;
+      }
     }
 
     if (experienceSequenceStarted) {
@@ -213,14 +252,20 @@
   function reveal() {
     if (duration) return;
     duration = Number.isFinite(video.duration) ? video.duration : 30.66;
-    displayedTime = targetTime = getProgress() * duration;
-    video.currentTime = displayedTime;
+    if (isMobileHero()) {
+      displayedTime = targetTime = 0;
+      video.currentTime = 0;
+    } else {
+      displayedTime = targetTime = getProgress() * duration;
+      video.currentTime = displayedTime;
+    }
     loaderBar.style.width = '100%';
     loaderPercent.textContent = '100%';
     window.setTimeout(() => {
       loader.classList.add('is-hidden');
       body.classList.remove('is-loading');
     }, 250);
+    configureHeroPlayback();
     syncTarget();
     render();
   }
@@ -242,9 +287,19 @@
 
   window.addEventListener('scroll', syncTarget, { passive: true });
   window.addEventListener('resize', syncTarget, { passive: true });
+  mobileHeroQuery.addEventListener('change', () => {
+    configureHeroPlayback();
+    syncTarget();
+  });
 
   const unlockVideo = () => {
-    video.play().then(() => video.pause()).catch(() => {});
+    video.play().then(() => {
+      if (isMobileHero()) {
+        video.playbackRate = 2;
+      } else {
+        video.pause();
+      }
+    }).catch(() => {});
     experienceVideos.forEach((clip) => {
       clip.playbackRate = 2;
       clip.play().then(() => {
